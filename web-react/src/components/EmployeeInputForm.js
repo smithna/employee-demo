@@ -33,13 +33,14 @@ const EmployeeInputForm = (props) => {
   const { classes } = props
   const [employeeName, setEmployeeName] = React.useState('')
   const [employeeId, setEmployeeId] = React.useState('')
-  const [addEmployee] = useMutation(CREATE_EMPLOYEE, {
-    update(cache, { data: { addEmployee } }) {
+  const [createEmployee] = useMutation(CREATE_EMPLOYEE, {
+    update(cache, { data: { CreateEmployee } }) {
       cache.modify({
         fields: {
-          employees(existingEmployees = []) {
+          Employee(existingEmployees = []) {
             const newEmployeeRef = cache.writeFragment({
-              data: addEmployee,
+              id: 'ROOT_QUERY',
+              data: CreateEmployee,
               fragment: gql`
                 fragment NewEmployee on Employee {
                   emp_id
@@ -54,9 +55,18 @@ const EmployeeInputForm = (props) => {
     },
   })
 
+  const handleEmployeeIdChange = (event) => {
+    const parsed = parseInt(event.target.value)
+    if (isNaN(parsed)) {
+      setEmployeeId('')
+    } else {
+      setEmployeeId(parsed)
+    }
+  }
+
   const handleSubmit = (event) => {
     event.preventDefault()
-    addEmployee({
+    createEmployee({
       variables: {
         emp_id: employeeId,
         name: employeeName,
@@ -86,7 +96,7 @@ const EmployeeInputForm = (props) => {
           value={employeeId}
           required
           className={classes.textField}
-          onChange={(e) => setEmployeeId(parseInt(e.target.value))}
+          onChange={handleEmployeeIdChange}
         />
         <Button
           variant="outlined"
