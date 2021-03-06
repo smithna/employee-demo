@@ -91,12 +91,13 @@ const EmployeeInputForm = (props) => {
         <TextField
           id="employee_id"
           label="Employee ID"
-          type="number"
+          type="text"
           variant="outlined"
           value={employeeId}
           required
           className={classes.textField}
           onChange={handleEmployeeIdChange}
+          helperText="Must be an integer"
         />
         <Button
           variant="outlined"
