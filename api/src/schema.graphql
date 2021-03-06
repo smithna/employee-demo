@@ -1,0 +1,4 @@
+type Employee {
+  emp_id: Int!
+  name: String!
+}
