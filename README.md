@@ -61,7 +61,7 @@ your clipboard that could be used to make this API call from a command line or s
 
 ### List all employees
 
-You can run this GraphQL query in GraphQL Playground to return all employees and their IDs.
+You can run this GraphQL query in GraphQL Playground to return all employees with their IDs and names.
 
     query listAllEmployees{
       Employee{
