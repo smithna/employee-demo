@@ -11,8 +11,8 @@ available at https://grandstack.io and in the book
 [Full Stack GraphQL Applications with GRANDstack](https://www.manning.com/books/fullstack-graphql-applications-with-grandstack) 
 by William Lyon. 
 
-Employee demo modifies the GRANDstack Starter by updating the GraphQL schema in `api/src/graphql-schema.js` to represent 
-employees instead of business reviews. The React components in `web-react/src` are considerably simplified from the GRANDstack 
+Employee demo modifies the GRANDstack Starter by updating the GraphQL schema in `./api/src/graphql-schema.js` to represent 
+employees instead of business reviews. The React components in `./web-react/src` are considerably simplified from the GRANDstack 
 starter UI to reflect only the two API operations. 
 
 ## Quickstart
