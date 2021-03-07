@@ -1,4 +1,4 @@
-# Employee demo
+# Employee Demo
 
 This project demonstrates using a GraphQL API to create Employee nodes in Neo4j. The API supports two operations:
 
@@ -11,15 +11,15 @@ available at https://grandstack.io and in the book
 [Full Stack GraphQL Applications with GRANDstack](https://www.manning.com/books/fullstack-graphql-applications-with-grandstack) 
 by William Lyon. 
 
-Employee demo modifies the GRANDstack Starter by updating the GraphQL schema in `./api/src/graphql-schema.js` to represent 
+Employee Demo modifies the GRANDstack Starter by updating the GraphQL schema in `./api/src/graphql-schema.js` to represent 
 employees instead of business reviews. The React components in `./web-react/src` are considerably simplified from the GRANDstack 
 starter UI to reflect only the two API operations. 
 
 ## Quickstart
 
-The GRANDstack Starter describes many ways to deploy GRANDstack applications. The Employee demo was tested 
+The GRANDstack Starter describes many ways to deploy GRANDstack applications. Employee Demo was tested 
 with Docker. To launch the API locally, [install Docker](https://docs.docker.com/get-docker/). Then, from a 
-command line navigate to the Employee demo install directory and run:
+command line, navigate to the Employee Demo install directory and run:
 
 `docker-compose up -d`
 
@@ -27,13 +27,13 @@ Docker will start a local Neo4j database, the GraphQL API server, and the web UI
 
 The web UI will be available via a web browser at the address `http://localhost:3000`
 
-![Employee demo app running in browser](img/Employee_demo.png)
+![Employee Demo app running in browser](img/Employee_demo.png)
 
 You can see the results of the API calls that the web UI  is making in Neo4j browser at http://localhost:7474.
 
 ## GraphQL API
 
-Employee demo includes the GraphQL Playground, which provides an easy interface for executing 
+Employee Demo includes the GraphQL Playground, which provides an easy interface for executing 
 GraphQL queries and mutations.
 
 In a web browser, navigate to https://localhost:4001/graphql to launch GraphQL Playground.
@@ -130,7 +130,7 @@ comes with GRANDstack starter has been modified in a few ways.
 To modify Employee Demo and deploy your updates to AWS, follow these steps:
 1. [Create your own Dockerhub repositories](https://docs.docker.com/docker-hub/repos/)
 2. Modify the image names in `docker-compose.yml` to match your repositories.
-3. Build your new images by running `docker-compose build` from your default docker context.
+3. Build your new images by running `docker-compose build` from your default Docker context.
 4. [Push your images to Docker Hub.](https://docs.docker.com/docker-hub/repos/#pushing-a-docker-container-image-to-docker-hub)
 5. Switch to your ECS Docker context.
 6. Run `docker compose up` to deploy to AWS
