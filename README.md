@@ -29,6 +29,8 @@ The web UI will be available via a web browser at the address `http://localhost:
 
 ![Employee demo app running in browser](img/Employee_demo.png)
 
+You can see the results of the API calls that the web UI  is making in Neo4j browser at http://localhost:7474.
+
 ## GraphQL API
 
 Employee demo includes the GraphQL Playground, which provides an easy interface for executing 
@@ -98,7 +100,8 @@ Docker compose will launch Employee Demo in ECS with this command.
 Note: The command is `docker compose up` in this context, not `docker-compose up` as when
 you run on your local Docker environment.
 
-You will see a cluster named employee-demo in the AWS web console under ECS.
+If you open the AWS web console and search for the ECS service, you will find a cluster 
+running called `employee-demo`.
 
 To find the URL where the web UI is running, 
 1. Open EC2 in the AWS console
@@ -112,4 +115,24 @@ This information is also available through the AWS CLI by running:
 
 Paste the DNS name into a web browser and add port `:3000` at the end to open the 
 Employee Demo web UI.
-    
+
+### Modifications to docker-compose.yml
+
+To enable deployment of Employee Demo via docker compose, the docker-compose.yml file that 
+comes with GRANDstack starter has been modified in a few ways.
+
+* Image names have been set for the web UI and API services.
+* The Neo4j service has been modified to use the Neo4j image directly instead of from the 
+  `Dockerfile` description in the `./neo4j` folder. 
+  * Installation of the APOC and GraphQL plugins are handled by environment variable
+  * Authentication is set by environment variable
+   
+To modify Employee Demo and deploy your updates to AWS, follow these steps:
+1. [Create your own Dockerhub repositories](https://docs.docker.com/docker-hub/repos/)
+2. Modify the image names in `docker-compose.yml` to match your repositories.
+3. Build your new images by running `docker-compose build` from your default docker context.
+4. [Push your images to Docker Hub.](https://docs.docker.com/docker-hub/repos/#pushing-a-docker-container-image-to-docker-hub)
+5. Switch to your ECS Docker context.
+6. Run `docker compose up` to deploy to AWS
+
+   
