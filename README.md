@@ -1,216 +1,115 @@
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://grandstack.io/deploy-starter-netlify) [![Deploy to Vercel](https://vercel.com/button)](https://grandstack.io/deploy-starter-vercel) [![Provision Neo4j](https://grandstack.io/img/provision-neo4j.png)](https://sandbox.neo4j.com/?usecase=blank-sandbox)
+# Employee demo
 
-# GRANDstack Starter
+This project demonstrates using a GraphQL API to create Employee nodes in Neo4j. The API supports two operations:
 
-```
-npx create-grandstack-app myNewApp
-```
+1. Create an Employee node. The operation accepts name (string) and emp_id (integer) parameters that are created as properties on the Employee node.
+2. Return all Employees to the client. 
 
-This project is a starter for building a [GRANDstack](https://grandstack.io) (GraphQL, React, Apollo, Neo4j Database) application. There are two components to the starter, the web frontend application (in React and Angular flavors) and the API app (GraphQL server).
+This project is based on the [GRANDstack Starter](https://github.com/grand-stack/grand-stack-starter) 
+application. Extensive documentation on the GRANDstack is 
+available at https://grandstack.io and in the book 
+[Full Stack GraphQL Applications with GRANDstack](https://www.manning.com/books/fullstack-graphql-applications-with-grandstack) 
+by William Lyon. 
 
-The starter represents a **business reviews dashboard**. You need to adjust the GraphQL schema, the seed data, database index creation, and the UI components for your use-case.
-
-[![Hands On With The GRANDstack Starter](http://img.youtube.com/vi/rPC71lUhK_I/0.jpg)](http://www.youtube.com/watch?v=1JLs166lPcA 'Hands On With The GRANDstack Starter')
-
-_Hands On With The GRANDstack Starter Video_
+Employee demo modifies the GRANDstack Starter by updating the GraphQL schema in `api/src/graphql-schema.js` to represent 
+employees instead of business reviews. The React components in `web-react/src` are considerably simplified from the GRANDstack 
+starter UI to reflect only the two API operations. 
 
 ## Quickstart
 
-The easiest way to get started with the GRANDstack Starter is to create a Neo4j Sandbox instance and use the `create-grandstack-app` command line tool.
+The GRANDstack Starter describes many ways to deploy GRANDstack applications. The Employee demo was tested 
+with Docker. To launch the API locally, [install Docker](https://docs.docker.com/get-docker/). Then, from a 
+command line navigate to the Employee demo install directory and run:
 
-(If you have a running Neo4j database on localhost via Neo4j Desktop or a Neo4j server installation, change the password in `api/.env`)
+`docker-compose up -d`
 
-### 1. Create A Neo4j Instance
+Docker will start a local Neo4j database, the GraphQL API server, and the web UI.
 
-#### Option :one: - Sandbox
+The web UI will be available via a web browser at the address `http://localhost:3000`
 
-[Neo4j Sandbox](https://neo4j.com/sandbox) allows you to create a free hosted Neo4j instance private to you that can be used for development.
+![Employee demo app running in browser](img/Employee_demo.png)
 
-After singing in to Neo4j Sandbox, click the `+ New Project` button and select the "Blank Sandbox" option. In the next step we'll use the connection credentials from the "Connection details" tab to connect our GraphQL API to this Neo4j instance.
+## GraphQL API
 
-![Neo4j Sandbox connection details](img/neo4j-sandbox.png)
+Employee demo includes the GraphQL Playground, which provides an easy interface for executing 
+GraphQL queries and mutations.
 
-#### Option :two: - Desktop
+In a web browser, navigate to https://localhost:4001/graphql to launch GraphQL Playground.
 
-If you instead would like to use [Neo4j Desktop](https://neo4j.com/download/). The process will be almost the same with a minor detour. Install Neo4j Desktop for your chosen OS and then make a new blank graph for your project. It will require you to put in a password and username. Remember those.
+![Create employee mutation in GraphQL Playground](img/create_employee.png)
 
-Next you need to go to open the manage screen from the options in the 3 dot stack menu
+### Create a new employee
+To create a new employee, set the query variables in the lower left part of the screen 
+   following this pattern.
 
-![New desktop graph, manage tab](img/desktop-new-graph.png)
+    { "emp_id": 3,
+      "name": "Nathan" }
 
-And install the apoc plugin, green button at the top of the list.
+Enter this mutation in the upper left part of the screen.
 
-![Plugins](img/apoc-install.png)
+    mutation createEmployee($emp_id: Int!, $name: String!) {
+      CreateEmployee(emp_id: $emp_id, name: $name) {
+        emp_id
+        name
+      }
+    }
 
-After that you can return to setting up your app with the credentials from the prior steps.
+Press the play button to test the mutation. Use the `copy curl` button to copy a curl script to 
+your clipboard that could be used to make this API call from a command line or shell script.
 
-### 2. Run the `create-grandstack-app` CLI
+### List all employees
 
-```
-npx create-grandstack-app myNewApp
-```
+You can run this GraphQL query in GraphQL Playground to return all employees and their IDs.
 
-or with Yarn
+    query listAllEmployees{
+      Employee{
+        emp_id
+        name
+      }
+    }
 
-```
-yarn create grandstack-app myNewApp
-```
+The React component `./web-react/src/components/EmployeeList.js` demonstrates a slightly more 
+complex GraphQL query listing employees with pagination, sorting, and filtering.
 
-![create grandstack app output](img/create-grandstack-app.png)
+## Deploying to AWS ECS with Docker compose
 
-This will create a new directory `myNewApp`, download the latest release of the GRANDstack Starter, install dependencies and prompt for your connection credentials for Neo4j to connect to the GraphQL API.
+[Amazon ECS and Docker compose](https://aws.amazon.com/blogs/containers/deploy-applications-on-amazon-ecs-using-docker-compose/)
+offer one way to deploy Employee Demo to the cloud.
 
-### 3. Seed the database (optional)
+You will need an AWS account with [appropriate permissions](https://docs.docker.com/cloud/ecs-integration/). 
 
-Make sure your application is running locally with `npm start` or `yarn start`, open another terminal and run
+If you have not installed AWS CLI, [install it](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html), and
+[create a named profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html).
 
-```
-npm run seedDb
-```
+Create a Docker context for interacting with ECS.
 
-or with Yarn
+    docker context create ecs myecscontext
 
-```
-yarn run seedDb
-```
+When prompted, select your AWS profile.
 
-### 4. Open In Browser
+Switch to your new Docker context.
 
-![Grandstack app running in browser](img/grandstack-app.png)
+    docker context use myecscontext
 
-## <a name="overview"></a> Overview
+Docker compose will launch Employee Demo in ECS with this command.
 
-The GRANDstack Starter is a monorepo that includes a GraphQL API application and client web applications for React (default) and Angular for a business reviews dashboard.
+    docker compose up
 
-### `/` - Project Root
+Note: The command is `docker compose up` in this context, not `docker-compose up` as when
+you run on your local Docker environment.
 
-The root directory contains some global configuration and scripts:
+You will see a cluster named employee-demo in the AWS web console under ECS.
 
-- `npm run start` and `npm run build`
-- ESLint (.eslintrc.json) for code linting
-- Prettier (.prettierrc.json) for code formatting
-- Git hooks for applying formatting on commit
+To find the URL where the web UI is running, 
+1. Open EC2 in the AWS console
+2. Click Load balancers
+3. Find your active load balancer with a name that starts with "emplo"
+4. Copy the DNS name from the configuration section
 
-### [`/api`](./api)
+This information is also available through the AWS CLI by running:
+   
+    aws elbv2 describe-load-balancers | grep DNSName
 
-![](img/graphql-playground.png)
-
-This directory contains the GraphQL API application using Apollo Server and neo4j-graphql.js.
-
-- Change environment variable settings in `.env`:
-
-```
-# Use this file to set environment variables with credentials and configuration options
-# This file is provided as an example and should be replaced with your own values
-# You probably don't want to check this into version control!
-
-NEO4J_URI=bolt://localhost:7687
-NEO4J_USER=neo4j
-NEO4J_PASSWORD=letmein
-
-# Uncomment this line to enable encrypted driver connection for Neo4j
-#NEO4J_ENCRYPTED=true
-
-# Uncomment this line to specify a specific Neo4j database (v4.x+ only)
-#NEO4J_DATABASE=neo4j
-
-GRAPHQL_SERVER_HOST=0.0.0.0
-GRAPHQL_SERVER_PORT=4001
-GRAPHQL_SERVER_PATH=/graphql
-
-```
-
-### [`/web-react`](./web-react)
-
-![](img/grandstack-app.png)
-
-The frontend React web application is found in this directory.
-
-It includes:
-
-- Material UI
-- React router
-- Apollo Client / React Hooks
-- Create React App
-
-### [`/web-angular`](./web-angular)
-
-![](web-angular/img/angular-ui.jpg)
-
-A UI built with [Angular](https://angular.io), [Apollo](https://www.apollographql.com/docs/angular/) and the [Clarity Design System](https://clarity.design) is also available.
-
-_Start the Angular UI server_
-
-```
-cd ./web-angular && npm start
-```
-
-### [`/mobile_client_flutter`](./mobile_client_flutter)
-
-![](img/grandstack-flutter.png)
-
-A mobile client built with [Flutter](https://flutter.dev) which supports Android, iOS, and web. See the [README](./mobile_client_flutter/README.md) for detailed setup instructions.
-
-```
-cd ./mobile_client_flutter && flutter run
-```
-
-### [`/web-react-ts`](./web-react-ts)
-
-A UI built with [CRA](https://reactjs.org/docs/create-a-new-react-app.html)
-
-_Start the React dev server_
-
-```
-cd ./web-react-ts && npm start
-```
-
-## Deployment
-
-### Netlify
-
-This monorepo can be deployed to Netlify. The frontend application will be served over Netlify's CDN and the GraphQL API will be provisioned as a serverless GraphQL API lambda function deployed to AWS (via Netlify). A netlify.toml file is included with the necessary build configurations. The following environment variables must be set in Netlify (either via the Netlify web UI or via the command line tool)
-
-```
-NEO4J_URI
-NEO4J_USER
-NEO4J_PASSWORD
-```
-
-See the "Hands On With The GRANDStack Starter" video linked at the beginning of this README for a walkthrough of deploying to Netlify.
-
-### Vercel
-
-Vercel can be used with monorepos such as grand-stack-starter. [`vercel.json`](https://github.com/grand-stack/grand-stack-starter/blob/master/vercel.json) defines the configuration for deploying with Vercel.
-
-1. get [vercel cli](https://vercel.com/download)
-2. Set the vercel secrets for your Neo4j instance:
-
-```
-vercel secret add grand_stack_starter_neo4j_uri bolt://<YOUR_NEO4J_INSTANCE_HERE>
-vercel secret add grand_stack_starter_neo4j_user <YOUR_DATABASE_USERNAME_HERE>
-vercel secret add grand_stack_starter_neo4j_password <YOUR_DATABASE_USER_PASSWORD_HERE>
-```
-
-3. Run `vercel`
-
-## Docker Compose
-
-You can quickly start via:
-
-```
-docker-compose up -d
-```
-
-If you want to load the example DB after the services have been started:
-
-```
-docker-compose run api npm run seedDb
-```
-
-See [the project releases](https://github.com/grand-stack/grand-stack-starter/releases) for the changelog.
-
-You can find instructions for other ways to use Neo4j (Neo4j Desktop, Neo4j Aura, and other cloud services) in the [Neo4j directory README.](./neo4j)
-
-This project is licensed under the Apache License v2.
-Copyright (c) 2020 Neo4j, Inc.
+Paste the DNS name into a web browser and add port `:3000` at the end to open the 
+Employee Demo web UI.
+    
